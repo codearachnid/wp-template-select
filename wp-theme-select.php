@@ -1,7 +1,7 @@
 <?php
 /*
-Plugin Name: WordPress Theme Selector
-Version: 0.1
+Plugin Name: WordPress Template Selector
+Version: 1.0
 Plugin URI: 
 Description: Select a specific theme & template for your page, post or custom post type
 Author: Timothy Wood @codearachnid
@@ -10,7 +10,7 @@ Text Domain: wp-theme-select
 Domain Path: /lang/
 License: GPL v3
 
-WordPress Theme Selector
+WordPress Template Selector
 Copyright (C) 2014, Timothy Wood - tim@imaginesimplicity.com
 
 This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,17 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
  * @package Main
  */
 
-if ( !defined( 'DB_NAME' ) ) {
-	header( 'HTTP/1.0 403 Forbidden' );
-	die;
+if ( !defined( 'ABSPATH' ) )
+	// header( 'HTTP/1.0 403 Forbidden' );
+	die( '-1' );
+
+add_action( 'plugins_loaded', 'wts_plugins_loaded' );
+function wts_plugins_loaded(){
+	$columns = include 'class/wts-columns.php';
+	$settings = include 'class/wts-settings.php';
+}
+
+add_action( 'admin_enqueue_scripts', 'wts_admin_enqueue_scripts' );
+function wts_admin_enqueue_scripts(){
+	wp_enqueue_style( 'wts-style', plugins_url( 'asset.css' , __FILE__ ), array(), '1.0' );
 }
