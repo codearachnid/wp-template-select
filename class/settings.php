@@ -3,9 +3,11 @@
 if( ! class_exists( 'WTS_Settings' ) ){
 	class WTS_Settings {
 
+		public static $column_key = 'wp-template-select';
+
 		function __construct(){
 
-			add_action('admin_menu', array( $this, 'add_settings_submenu' ) );
+			add_action( 'admin_menu', array( $this, 'add_settings_submenu' ) );
 			add_action( 'admin_init', array( $this, 'register_settings' ) );
 
 		}
@@ -16,32 +18,33 @@ if( ! class_exists( 'WTS_Settings' ) ){
 		 */
 		function add_settings_submenu(){
 			add_options_page( 
-				'Theme Select', 
-				'Theme Select', 
+				'Template Select', 
+				'Template Select', 
 				'manage_options', 
-				'wts_options', 
+				self::$column_key, 
 				array( $this, 'wts_option_page' )
 				);
 		}
 
 		function register_settings(){
+
 			register_setting( 
-				'wts_options', 
-				'wts_options', 
+				self::$column_key, 
+				self::$column_key, 
 				array( $this, 'wts_validate_options' )
 				);
 
 			add_settings_section( 
 				'wts_main', 
-				__('Configure:', 'wts' ), 
+				__('Configure:', 'wp-template-select' ), 
 				null, 
-				'wts_options' 
+				self::$column_key
 				);
 			add_settings_field( 
-				__( 'Enable on Post Types', 'wts' ), 
-				__( 'Enable on Post Types', 'wts' ), 
-				array( $this, 'wts_field_post_types' ), 
-				'wts_options', 
+				__( 'Enable on Post Types', 'wp-template-select' ), 
+				__( 'Enable on Post Types', 'wp-template-select' ), 
+				array( $this, 'field_post_types' ), 
+				self::$column_key, 
 				'wts_main' 
 				);
 
@@ -51,15 +54,18 @@ if( ! class_exists( 'WTS_Settings' ) ){
 		 * settings field for listing post types
 		 * @return void
 		 */
-		function wts_field_post_types(){
-			$options = get_option('wprs_options');
+		function field_post_types(){
+			$options = get_option(self::$column_key);
 			$post_types = !empty( $options['post_types'] ) ? (array) $options['post_types'] : array();
+			$post_type_args = apply_filters( 'wts-settings/post-type-args', array(
+				'public'=> true 
+				) );
 			echo '<ul>';
-			foreach( get_post_types() as $post_type ) {
+			foreach( get_post_types( $post_type_args ) as $post_type ) {
 				
 				?><li>
 						<label>
-						<input id='wprs_reset_post_types' name='wprs_options[post_types][<?php echo $post_type; ?>]' type='checkbox' value='<?php echo $post_type; ?>' <?php checked( in_array( $post_type, $post_types ) ); ?> />
+						<input id='<?php echo self::$column_key; ?>-post-types' name='<?php echo self::$column_key; ?>[post_types][<?php echo $post_type; ?>]' type='checkbox' value='<?php echo $post_type; ?>' <?php checked( in_array( $post_type, $post_types ) ); ?> />
 						<?php echo ucwords( strtolower( str_replace( '-', ' ', str_replace( '_', ' ', $post_type ) ) ) ); ?></label>
 				</li><?php
 			}
@@ -83,14 +89,14 @@ if( ! class_exists( 'WTS_Settings' ) ){
 		 */
 		function wts_option_page(){
 			?><div class="wrap">
-				<h2><?php _e( 'Customize Theme Select Options', 'wts' ); ?></h2>
-				<h4><?php _e( 'Because sometimes you just want to revert your slugs to what WordPress thinks is best.', 'wts' ); ?></h4>
+				<h2><?php _e( 'Customize Template Select Options', 'wp-template-select' ); ?></h2>
+				<h4><?php _e( 'Because sometimes you just want to revert your slugs to what WordPress thinks is best.', 'wp-template-select' ); ?></h4>
 				<form action="options.php" method="post">
 					<input type="hidden" name="sanitize_slugs" value="1" />
 					<?php 
 
-					settings_fields( 'wts_options' ); 
-					do_settings_sections( 'wts_options' );
+					settings_fields( self::$column_key ); 
+					do_settings_sections( self::$column_key );
 					submit_button();
 
 					?>

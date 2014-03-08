@@ -36,8 +36,9 @@ if ( !defined( 'ABSPATH' ) )
 
 add_action( 'plugins_loaded', 'wts_plugins_loaded' );
 function wts_plugins_loaded(){
-	$columns = include 'class/wts-columns.php';
-	$settings = include 'class/wts-settings.php';
+	$settings = include 'class/settings.php';
+	$columns = include 'class/columns.php';
+	
 }
 
 add_action( 'admin_enqueue_scripts', 'wts_admin_enqueue_scripts' );
