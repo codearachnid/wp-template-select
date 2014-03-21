@@ -7,6 +7,7 @@ if( ! class_exists( 'WTS_Columns' ) ){
 
 		function __construct(){
 			add_action( 'admin_init', array( $this, 'admin_init' ) );
+			add_action( 'admin_enqueue_scripts', array( $this, 'admin_scripts' ) );
 		}
 
 		function admin_init(){
@@ -20,6 +21,15 @@ if( ! class_exists( 'WTS_Columns' ) ){
 				add_action( 'manage_pages_custom_column' , array( $this, 'custom_column_header' ), 10, 2 );
 			}
 			
+		}
+
+		function admin_scripts(){
+			wp_enqueue_script( WTS_Settings::$column_key );
+		    $translation_array = array( 
+		    	'some_string' => __( 'Some string to translate' ), 
+		    	'a_value' => '10' 
+		    	);
+		    wp_localize_script( WTS_Settings::$column_key, WTS_Settings::$column_key, $translation_array );
 		}
 
 		function custom_column_header( $column, $post_id ) {

@@ -36,12 +36,14 @@ if ( !defined( 'ABSPATH' ) )
 
 add_action( 'plugins_loaded', 'wts_plugins_loaded' );
 function wts_plugins_loaded(){
+	add_action( 'admin_enqueue_scripts', 'wts_admin_enqueue_scripts' );
 	$settings = include 'class/settings.php';
 	$columns = include 'class/columns.php';
 	
 }
 
-add_action( 'admin_enqueue_scripts', 'wts_admin_enqueue_scripts' );
 function wts_admin_enqueue_scripts(){
-	wp_enqueue_style( 'wts-style', plugins_url( 'asset.css' , __FILE__ ), array(), '1.0' );
+	$plugin_data = get_plugin_data( __FILE__ );
+	wp_enqueue_style( WTS_Settings::$column_key . '-style', plugins_url( WTS_Settings::$column_key . '.css' , __FILE__ ), array(), $plugin_data['Version'] );
+	wp_enqueue_script( WTS_Settings::$column_key . '-script', plugins_url( WTS_Settings::$column_key . '.js' , __FILE__ ), array( 'jquery' ), $plugin_data['Version'], true );
 }
